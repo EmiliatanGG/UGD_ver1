@@ -409,7 +409,7 @@ def main(argv):
         s_dim = 17
         a_dim = 6
 
-    gin_config_files = '/home/emiliatan/PycharmProjects/ODGG/CQL-master/configs/ugd/' + env_name + '/' + other_name + '.gin'
+    gin_config_files = '/The location of this file in your system/configs/ugd/' + env_name + '/' + other_name + '.gin'
 
     gin.parse_config_files_and_bindings([gin_config_files], [])
 
@@ -432,7 +432,7 @@ def main(argv):
                 eval_sampler.env.observation_space.shape[0] + eval_sampler.env.action_space.shape[0]],
             disable_terminal_norm=FLAGS.model_terminals,
         ),
-        results_folder=os.path.join("/home/emiliatan/PycharmProjects/ODGG/CQL-master/logs", FLAGS.log_name),
+        results_folder=os.path.join("/The location of this file in your system/logs", FLAGS.log_name),
         model_terminals=FLAGS.model_terminals,
         rew_model=rew_model,
         rew_model_optim=rew_model_optim

@@ -118,50 +118,7 @@ class BasicClassifier(nn.Module):
         # 打印模型权重的设备信息
         return self.net(sa)
 
-class TransformerModel(nn.Module):
-    def __init__(self, input_dim, action_dim, output_dim, num_heads, num_layers, dim_feedforward, dropout=0.1):
-        super(TransformerModel, self).__init__()
-        self.input_dim = input_dim
-        self.action_dim = action_dim
-        self.output_dim = output_dim
-
-        # 输入嵌入层
-        self.state_embedding = nn.Linear(input_dim, dim_feedforward)
-        self.action_embedding = nn.Linear(action_dim, dim_feedforward)
-
-        # Transformer 编码器
-        encoder_layer = nn.TransformerEncoderLayer(d_model=dim_feedforward, nhead=num_heads,
-                                                   dim_feedforward=dim_feedforward, dropout=dropout,batch_first=True)
-        self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
-
-        # 输出层
-        self.next_state_head = nn.Linear(dim_feedforward, output_dim)
-        self.reward_head = nn.Linear(dim_feedforward, 1)
-        self.done_head = nn.Linear(dim_feedforward, 1)
-
-    def forward(self, state, action):
-        # 嵌入输入
-        state_emb = self.state_embedding(state)
-        action_emb = self.action_embedding(action)
-
-        # 合并状态和动作嵌入
-        input_seq = state_emb + action_emb
-
-        # Transformer 编码器
-        input_seq = input_seq.unsqueeze(1)  # 添加序列维度
-        transformer_output = self.transformer_encoder(input_seq)
-
-        # 取出编码器的输出
-        transformer_output = transformer_output.squeeze(1)
-
-        # 预测下一个状态、奖励和是否完成标志
-        next_state = self.next_state_head(transformer_output)
-        reward = self.reward_head(transformer_output)
-        done = self.done_head(transformer_output)
-
-        return next_state, reward, done
-
-def test_authenticity(diffusion,env):
+def test_authenticity(diffusion,env):#用于将训练过程中的数据保存到一个txt文件以便实验
     env = gym.make(env)
     difference=[]
     # 打开文件进行写入
@@ -194,7 +151,7 @@ def test_authenticity(diffusion,env):
             f.write("%s\n" % [distance1, distance2, distance3, total])
     return difference
 
-def gen_acc(diffusion,env,classifier):
+def gen_acc(diffusion,env,classifier):#通过真实的环境测试扩散生成的transition的准确性
     env = gym.make(env)
     difference=[]
     # 打开文件进行写入
@@ -270,7 +227,7 @@ def label_classifier(buffer,classifier):
     # 返回预测结果
     return predictions
 
-def draw_distribution(diffusion,input_name):
+def draw_distribution(diffusion,input_name):#用于将训练过程中的'observations'和['actions'保存到一个txt文件以便实验
     # 打开文件进行写入
     with open(f"{input_name}.txt", 'w') as f:
         for i in range(len(diffusion['observations'])):
